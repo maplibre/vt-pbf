@@ -26,18 +26,23 @@ class FeatureWrapper extends VectorTileFeature {
         // vector tile spec only supports integer values for feature ids --
         // allowing non-integer values here results in a non-compliant PBF
         // that causes an exception when it is parsed with vector-tile-js
-        if ('id' in feature && !isNaN(feature.id as any)) {
-            this.id = typeof feature.id === 'string' ? parseInt(feature.id, 10) : feature.id;
+        if ('id' in feature) {
+            if (typeof feature.id === 'string') {
+                this.id = parseInt(feature.id, 10);
+            } else if (typeof feature.id === 'number' && !isNaN(feature.id as number)) {
+                this.id = feature.id;
+            }
         }
     }
 
     loadGeometry() {
         const geometry = [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const rawGeo = this.feature.type === 1 ? [this.feature.geometry] : this.feature.geometry as any as Geometry[][];
         for (const ring of rawGeo) {
             const newRing = [];
-            for (let i = 0; i < ring.length; i++) {
-                newRing.push(new Point(ring[i][0], ring[i][1]));
+            for (const point of ring) {
+                newRing.push(new Point(point[0], point[1]));
             }
             geometry.push(newRing);
         }

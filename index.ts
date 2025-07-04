@@ -57,8 +57,8 @@ const writeGeometry = (feature: VectorTileFeature, pbf: Pbf) => {
     const type = feature.type;
     let x = 0;
     let y = 0;
-    for (let r = 0; r < geometry.length; r++) {
-        const ring = geometry[r];
+
+    for (const ring of geometry) {
         let count = 1;
         if (type === 1) {
             count = ring.length;
@@ -129,13 +129,13 @@ const writeLayer = (layer: VectorTileLayer, pbf: Pbf) => {
     }
 
     const keys = context.keys;
-    for (let i = 0; i < keys.length; i++) {
-        pbf.writeStringField(3, keys[i]);
+    for (const key of keys) {
+        pbf.writeStringField(3, key);
     }
 
     const values = context.values;
-    for (let i = 0; i < values.length; i++) {
-        pbf.writeMessage(4, writeValue, values[i]);
+    for (const value of values) {
+        pbf.writeMessage(4, writeValue, value);
     }
 }
 
@@ -162,6 +162,7 @@ export function fromVectorTileJs(tile: VectorTile): Uint8Array {
  */
 export function fromGeojsonVt(layers: geojsonvt.Tile[], options?: GeoJSONOptions): Uint8Array {
     const l: Record<string, VectorTileLayer> = {};
+    // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const k in layers) {
         l[k] = new GeoJSONWrapper(layers[k].features, options);
         l[k].name = k;

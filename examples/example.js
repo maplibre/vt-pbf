@@ -1,6 +1,6 @@
-var fs = require('fs')
-var geojsonVt = require('geojson-vt')
-var vtpbf = require('../')
+import fs from 'fs'
+import geojsonVt from 'geojson-vt'
+import {fromGeojsonVt} from '../'
 
 // Example: read geojson from a file and write a protobuf
 // Usage: node example.js filename.geojson z x y > tile.z.x.y.pbf
@@ -13,5 +13,5 @@ var x = +process.argv[4]
 var y = +process.argv[5]
 var tile = tileindex.getTile(z, x, y)
 
-var buff = vtpbf.fromGeojsonVt(tile, 'geojsonLayer')
+var buff = fromGeojsonVt({ 'geojsonLayer': tile })
 process.stdout.write(buff)
