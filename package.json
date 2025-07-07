@@ -3,7 +3,7 @@
   "version": "4.0.0",
   "description": "Serialize mapbox vector tiles to binary protobufs in javascript.",
   "main": "dist/index.es.js",
-	"types": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -32,6 +32,7 @@
     "@mapbox/geojson-fixtures": "^1.0.0",
     "@mapbox/mvt-fixtures": "^3.10.0",
     "@maplibre/vtvalidate": "^0.3.2",
+    "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-strip": "^3.0.4",
     "@rollup/plugin-terser": "^0.4.4",

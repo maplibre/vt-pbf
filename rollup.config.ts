@@ -2,15 +2,13 @@ import {type RollupOptions} from 'rollup';
 import strip from '@rollup/plugin-strip';
 import terser from '@rollup/plugin-terser';
 import typescript from '@rollup/plugin-typescript';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const pkg = require('./package.json');
+import {nodeResolve} from '@rollup/plugin-node-resolve';
 
 const config: RollupOptions = {
     input: ['index.ts'],
     output: [
         {
-            file: pkg.main,
+            file: "dist/index.es.js",
             format: 'es',
             sourcemap: true
         }
@@ -30,11 +28,10 @@ const config: RollupOptions = {
             },
             sourceMap: true
         }),
-        typescript()
+        typescript(),
+        nodeResolve()
     ],
-    external: [
-		...Object.keys(pkg.dependencies || {})
-	],
+    external: [/node_modules/]
 };
 
 export default config;
