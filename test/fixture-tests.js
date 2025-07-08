@@ -1,17 +1,17 @@
-var test = require('tape').test
-var geojsonVt = require('geojson-vt')
-var VectorTile = require('@mapbox/vector-tile').VectorTile
-var Pbf = require('pbf')
-var vtvalidate = require('@mapbox/vtvalidate')
-var geojsonFixtures = require('@mapbox/geojson-fixtures')
-var mvtf = require('@mapbox/mvt-fixtures')
-var GeoJsonEquality = require('geojson-equality')
-var eq = new GeoJsonEquality({ precision: 1 })
+import { test, expect, describe } from 'vitest'
+import geojsonvt from 'geojson-vt'
+import { VectorTile } from '@mapbox/vector-tile'
+import Pbf from 'pbf'
+import vtvalidate from '@maplibre/vtvalidate'
+import geojsonFixtures from '@mapbox/geojson-fixtures'
+import mvtf from '@mapbox/mvt-fixtures'
+import GeoJsonEquality from 'geojson-equality'
+import { fromVectorTileJs, fromGeojsonVt } from '../'
 
-var vtpbf = require('../')
+const eq = new GeoJsonEquality({ precision: 1 })
 
-test('geojson-vt', function (t) {
-  var geometryTypes = ['polygon', 'point', 'multipoint', 'multipolygon', 'polygon', 'multilinestring']
+describe('geojson-vt', function () {
+  const geometryTypes = ['polygon', 'point', 'multipoint', 'multipolygon', 'polygon', 'multilinestring']
 
   const fixtures = geometryTypes.map(function (type) {
     return {
@@ -21,61 +21,56 @@ test('geojson-vt', function (t) {
   })
 
   fixtures.forEach(function (fixture) {
-    t.test(fixture.name, function (t) {
-      var tile = geojsonVt(fixture.data).getTile(0, 0, 0)
-      var buff = vtpbf.fromGeojsonVt({ geojsonLayer: tile })
-      vtvalidate.isValid(buff, (err, invalid) => {
-        t.error(err)
-
-        t.ok(!invalid, invalid)
+    test(fixture.name, function () {
+      const tile = geojsonvt(fixture.data).getTile(0, 0, 0)
+      const buff = fromGeojsonVt({ geojsonLayer: tile })
+      vtvalidate.isValid(buff, (err, result) => {
+        expect(err).toBeFalsy()
+        expect(result).toEqual('')
 
         // Compare roundtripped features with originals
         const expected = fixture.data.type === 'FeatureCollection' ? fixture.data.features : [fixture.data]
-        var layer = new VectorTile(new Pbf(buff)).layers.geojsonLayer
-        t.equal(layer.length, expected.length, expected.length + ' features')
-        for (var i = 0; i < layer.length; i++) {
-          var actual = layer.feature(i).toGeoJSON(0, 0, 0)
-          t.ok(eq.compare(actual, expected[i]), 'feature ' + i)
+        const layer = new VectorTile(new Pbf(buff)).layers.geojsonLayer
+        expect(layer.length).toEqual(expected.length, expected.length + ' features')
+        for (let i = 0; i < layer.length; i++) {
+          const actual = layer.feature(i).toGeoJSON(0, 0, 0)
+          expect(eq.compare(actual, expected[i])).toBeTruthy()
         }
-        t.end()
       })
     })
   })
-
-  t.end()
 })
 
-test('vector-tile-js', function (t) {
+describe('vector-tile-js', function () {
   // See https://github.com/mapbox/mvt-fixtures/blob/master/FIXTURES.md for
   // fixture descriptions
   mvtf.each(function (fixture) {
     // skip invalid tiles
     if (!fixture.validity.v2) return
 
-    t.test('mvt-fixtures: ' + fixture.id + ' ' + fixture.description, function (t) {
-      var original = new VectorTile(new Pbf(fixture.buffer))
+    test('mvt-fixtures: ' + fixture.id + ' ' + fixture.description, function () {
+      const original = new VectorTile(new Pbf(new Uint8Array(fixture.buffer)))
 
       if (fixture.id === '020') {
-        t.comment('Skipping test due to https://github.com/mapbox/vt-pbf/issues/30')
-        t.end()
+        console.log('Skipping test due to https://github.com/mapbox/vt-pbf/issues/30')
         return
       }
 
       if (fixture.id === '049' || fixture.id === '050') {
-        t.comment('Skipping test due to https://github.com/mapbox/vt-pbf/issues/31')
-        t.end()
+        console.log('Skipping test due to https://github.com/mapbox/vt-pbf/issues/31')
         return
       }
 
-      var buff = vtpbf(original)
-      var roundtripped = new VectorTile(new Pbf(buff))
+      const buff = fromVectorTileJs(original)
+      const roundtripped = new VectorTile(new Pbf(buff))
 
       vtvalidate.isValid(buff, (err, invalid) => {
-        t.error(err)
+        if (err) {
+          throw err
+        }
 
         if (invalid && invalid === 'ClosePath command count is not 1') {
-          t.comment('Skipping test due to https://github.com/mapbox/vt-pbf/issues/28')
-          t.end()
+          console.log('Skipping test due to https://github.com/mapbox/vt-pbf/issues/28')
           return
         }
 
@@ -85,28 +80,25 @@ test('vector-tile-js', function (t) {
           invalid = null
         }
 
-        t.ok(!invalid, invalid)
+        expect(!invalid).toBeTruthy()
 
         // Compare roundtripped features with originals
-        for (var name in original.layers) {
-          var originalLayer = original.layers[name]
-          t.ok(roundtripped.layers[name], 'layer ' + name)
-          var roundtrippedLayer = roundtripped.layers[name]
-          t.equal(roundtrippedLayer.length, originalLayer.length)
-          for (var i = 0; i < originalLayer.length; i++) {
-            var actual = roundtrippedLayer.feature(i)
-            var expected = originalLayer.feature(i)
+        for (const name in original.layers) {
+          const originalLayer = original.layers[name]
+          expect(roundtripped.layers[name]).toBeTruthy()
+          const roundtrippedLayer = roundtripped.layers[name]
+          expect(roundtrippedLayer.length).toEqual(originalLayer.length)
+          for (let i = 0; i < originalLayer.length; i++) {
+            const actual = roundtrippedLayer.feature(i)
+            const expected = originalLayer.feature(i)
 
-            t.equal(actual.id, expected.id, 'id')
-            t.equal(actual.type, expected.type, 'type')
-            t.deepEqual(actual.properties, expected.properties, 'properties')
-            t.deepEqual(actual.loadGeometry(), expected.loadGeometry(), 'geometry')
+            expect(actual.id).toEqual(expected.id, 'id')
+            expect(actual.type).toEqual(expected.type, 'type')
+            expect(actual.properties).toEqual(expected.properties, 'properties')
+            expect(actual.loadGeometry()).toEqual(expected.loadGeometry(), 'geometry')
           }
         }
-
-        t.end()
       })
     })
   })
-  t.end()
 })
