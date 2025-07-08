@@ -12,13 +12,13 @@ class Context {
 }
 
 const writeTile = (tile: VectorTile, pbf: Pbf) => {
-    for (let key in tile.layers) {
+    for (const key in tile.layers) {
         pbf.writeMessage(3, writeLayer, tile.layers[key]);
     }
 }
 
 const writeProperties = (context: Context, pbf: Pbf) => {
-    for (let key in context.feature?.properties) {
+    for (const key in context.feature?.properties) {
         let value = context.feature.properties[key];
 
         let keyIndex = context.keycache[key];
@@ -35,7 +35,7 @@ const writeProperties = (context: Context, pbf: Pbf) => {
             value = JSON.stringify(value);
         }
         const valueKey = typeof value + ':' + value;
-        var valueIndex = context.valuecache[valueKey];
+        let valueIndex = context.valuecache[valueKey];
         if (typeof valueIndex === 'undefined') {
             context.values.push(value as string);
             valueIndex = context.values.length - 1;
@@ -46,19 +46,19 @@ const writeProperties = (context: Context, pbf: Pbf) => {
 }
 
 const writeGeometry = (feature: VectorTileFeature, pbf: Pbf) => {
-    let command = (cmd: number, length: number) => {
+    const command = (cmd: number, length: number) => {
         return (length << 3) + (cmd & 0x7);
     }
-    let zigzag = (num: number) => {
+    const zigzag = (num: number) => {
         return (num << 1) ^ (num >> 31);
     }
 
     const geometry = feature.loadGeometry();
     const type = feature.type;
-    let x: number = 0;
-    let y: number = 0;
-    for (let r = 0; r < geometry.length; r++) {
-        const ring = geometry[r];
+    let x = 0;
+    let y = 0;
+
+    for (const ring of geometry) {
         let count = 1;
         if (type === 1) {
             count = ring.length;
@@ -121,7 +121,7 @@ const writeLayer = (layer: VectorTileLayer, pbf: Pbf) => {
     pbf.writeStringField(1, layer.name || '');
     pbf.writeVarintField(5, layer.extent || 4096);
 
-    let context: Context = new Context();
+    const context: Context = new Context();
 
     for (let i = 0; i < layer.length; i++) {
         context.feature = layer.feature(i);
@@ -129,13 +129,13 @@ const writeLayer = (layer: VectorTileLayer, pbf: Pbf) => {
     }
 
     const keys = context.keys;
-    for (let i = 0; i < keys.length; i++) {
-        pbf.writeStringField(3, keys[i]);
+    for (const key of keys) {
+        pbf.writeStringField(3, key);
     }
 
     const values = context.values;
-    for (let i = 0; i < values.length; i++) {
-        pbf.writeMessage(4, writeValue, values[i]);
+    for (const value of values) {
+        pbf.writeMessage(4, writeValue, value);
     }
 }
 
@@ -161,8 +161,9 @@ export function fromVectorTileJs(tile: VectorTile): Uint8Array {
  * @return {Uint8Array} uncompressed, pbf-serialized tile data
  */
 export function fromGeojsonVt(layers: geojsonvt.Tile[], options?: GeoJSONOptions): Uint8Array {
-    let l: Record<number, GeoJSONWrapper> = {};
-    for (let k in layers) {
+    const l: Record<string, VectorTileLayer> = {};
+    // eslint-disable-next-line @typescript-eslint/no-for-in-array
+    for (const k in layers) {
         l[k] = new GeoJSONWrapper(layers[k].features, options);
         l[k].name = k;
         l[k].version = options ? options.version : 1;

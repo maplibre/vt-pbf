@@ -1,8 +1,8 @@
 import Point from '@mapbox/point-geometry';
-import Pbf from 'pbf';
-import {VectorTileFeature, type VectorTileLayer, type VectorTile} from '@mapbox/vector-tile';
+import {VectorTileFeature, VectorTileLayer, type VectorTile} from '@mapbox/vector-tile';
 import type {TileFeature, AnyProps} from 'supercluster';
-import type {Feature as GeoJSONVTFeature} from 'geojson-vt';
+import {type Feature as GeoJSONVTFeature, Geometry} from 'geojson-vt';
+import Pbf from 'pbf';
 
 export type Feature = TileFeature<AnyProps, AnyProps> | GeoJSONVTFeature;
 
@@ -11,26 +11,12 @@ export interface GeoJSONOptions {
     extent: number;
 }
 
-class FeatureWrapper implements VectorTileFeature {
-    _feature: Feature;
-
-    extent: number;
-    type: Feature['type'];
-    id: number | undefined = undefined;
-    properties: {[_: string]: string | number | boolean};
-    _pbf: Pbf = new Pbf();
-    _geometry: number = -1;
-    _keys: string[] = [];
-    _values: unknown[] = [];
-
-    bbox(): number[] {
-        return VectorTileFeature.prototype.bbox.call(this);
-    }
+class FeatureWrapper extends VectorTileFeature {
+    feature: Feature;
 
     constructor(feature: Feature, extent: number) {
-        this._feature = feature;
-
-        this.extent = extent;
+        super(new Pbf(), 0, extent, [], []);
+        this.feature = feature;
         this.type = feature.type;
         this.properties = feature.tags ? feature.tags : {};
 
@@ -40,51 +26,49 @@ class FeatureWrapper implements VectorTileFeature {
         // vector tile spec only supports integer values for feature ids --
         // allowing non-integer values here results in a non-compliant PBF
         // that causes an exception when it is parsed with vector-tile-js
-        if ('id' in feature && !isNaN(feature.id as any)) {
-            this.id = parseInt(feature.id, 10);
+        if ('id' in feature) {
+            if (typeof feature.id === 'string') {
+                this.id = parseInt(feature.id, 10);
+            } else if (typeof feature.id === 'number' && !isNaN(feature.id as number)) {
+                this.id = feature.id;
+            }
         }
     }
 
     loadGeometry() {
         const geometry = [];
-        const rawGeo = this._feature.type === 1 ? [this._feature.geometry] : this._feature.geometry;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const rawGeo = this.feature.type === 1 ? [this.feature.geometry] : this.feature.geometry as any as Geometry[][];
         for (const ring of rawGeo) {
-            let newRing = [];
-            for (let i = 0; i < ring.length; i++) {
-                newRing.push(new Point(ring[i][0], ring[i][1]));
+            const newRing = [];
+            for (const point of ring) {
+                newRing.push(new Point(point[0], point[1]));
             }
             geometry.push(newRing);
         }
         return geometry;
     }
-
-    toGeoJSON(x: number, y: number, z: number) {
-        return VectorTileFeature.prototype.toGeoJSON.call(this, x, y, z);
-    }
 }
 
-export class GeoJSONWrapper implements VectorTile, VectorTileLayer {
-    layers: {[_: string]: VectorTileLayer};
+export class GeoJSONWrapper extends VectorTileLayer implements VectorTile {
+    layers: Record<string, VectorTileLayer>;
     name: string;
     extent: number;
     length: number;
     version: number;
-    _features: number[] = [];
-    _pbf: Pbf = new Pbf();
-    _keys: string[] = [];
-    _values: unknown[] = [];
-    _geoJSONFeatures: Array<Feature>;
+    features: Feature[];
 
     constructor(features: Feature[], options?: GeoJSONOptions) {
+        super(new Pbf());
         this.layers = {'_geojsonTileLayer': this};
         this.name = '_geojsonTileLayer';
         this.version = options ? options.version : 1;
         this.extent = options ? options.extent : 4096;
         this.length = features.length;
-        this._geoJSONFeatures = features;
+        this.features = features;
     }
 
     feature(i: number): VectorTileFeature {
-        return new FeatureWrapper(this._geoJSONFeatures[i], this.extent);
+        return new FeatureWrapper(this.features[i], this.extent);
     }
 }
