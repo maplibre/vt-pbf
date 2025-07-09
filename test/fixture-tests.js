@@ -6,7 +6,7 @@ import vtvalidate from '@maplibre/vtvalidate'
 import geojsonFixtures from '@mapbox/geojson-fixtures'
 import mvtf from '@mapbox/mvt-fixtures'
 import GeoJsonEquality from 'geojson-equality'
-import { fromVectorTileJs, fromGeojsonVt } from '../'
+import { fromVectorTileJs, fromGeojsonVt } from '../index.ts'
 
 const eq = new GeoJsonEquality({ precision: 1 })
 

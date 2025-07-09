@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "eslint index.ts lib/*.ts",
     "test-unit": "vitest run --config vitest.config.unit.ts",
+    "test-unit-ci": "vitest run --config vitest.config.unit.ts --coverage",
     "build": "rollup --config rollup.config.ts --configPlugin typescript && tsc"
   },
   "author": "Anand Thakker <vestibule@anandthakker.net> (http://anandthakker.net/)",
@@ -38,6 +39,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.4",
     "@types/node": "^24.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
     "benchmark": "^2.1.4",
     "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
