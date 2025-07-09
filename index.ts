@@ -14,8 +14,8 @@ interface Context {
 /**
  * Serialize a vector-tile-js-created tile to pbf
  *
- * @param {VectorTile} tile
- * @return {Uint8Array} uncompressed, pbf-serialized tile data
+ * @param tile
+ * @return uncompressed, pbf-serialized tile data
  */
 export function fromVectorTileJs(tile: VectorTile): Uint8Array {
     const out = new Pbf();
@@ -26,11 +26,9 @@ export function fromVectorTileJs(tile: VectorTile): Uint8Array {
 /**
  * Serialized a geojson-vt-created tile to pbf.
  *
- * @param {Object} layers - An object mapping layer names to geojson-vt-created vector tile objects
- * @param {GeoJSONOptions} [options] - An object specifying the vector-tile specification version and extent that were used to create `layers`.
- * @param {Number} [options.version=1] - Version of vector-tile spec used
- * @param {Number} [options.extent=40966] - Extent of the vector tile
- * @return {Uint8Array} uncompressed, pbf-serialized tile data
+ * @param layers - An object mapping layer names to geojson-vt-created vector tile objects
+ * @param options - An object specifying the vector-tile specification version and extent that were used to create `layers`.
+ * @return uncompressed, pbf-serialized tile data
  */
 export function fromGeojsonVt(layers: geojsonvt.Tile[], options?: GeoJSONOptions): Uint8Array {
     const l: Record<string, VectorTileLayer> = {};
@@ -163,7 +161,7 @@ function writeGeometry(feature: VectorTileFeature, pbf: Pbf) {
 
 function writeValue(value: string | boolean | number, pbf: Pbf) {
     const type = typeof value;
-    if (type == 'string') {
+    if (type === 'string') {
         pbf.writeStringField(1, value as string);
     } else if (type === 'boolean') {
         pbf.writeBooleanField(7, value as boolean);
