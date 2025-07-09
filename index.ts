@@ -3,7 +3,7 @@ import {type GeoJSONOptions, type Feature, GeoJSONWrapper} from './lib/geojson_w
 import geojsonvt from 'geojson-vt';
 import {type VectorTileLayer, type VectorTile, VectorTileFeature} from '@mapbox/vector-tile';
 
-type Context = {
+interface Context {
     keys: string[];
     values: string[];
     keycache: Record<string, number>;
