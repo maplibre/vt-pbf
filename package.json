@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "eslint index.ts lib/*.ts",
     "test-unit": "vitest run --config vitest.config.unit.ts",
+    "test-unit-ci": "vitest run --config vitest.config.unit.ts --coverage",
     "build": "rollup --config rollup.config.ts --configPlugin typescript && tsc"
   },
   "author": "Anand Thakker <vestibule@anandthakker.net> (http://anandthakker.net/)",
