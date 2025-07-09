@@ -5,7 +5,7 @@ import { VectorTile } from '@mapbox/vector-tile'
 import GeoJsonEquality from 'geojson-equality'
 import fs from 'fs'
 import path from 'path'
-import { fromGeojsonVt } from '../'
+import { fromGeojsonVt } from '../index.ts'
 
 const eq = new GeoJsonEquality({ precision: 1 })
 

@@ -1,5 +1,5 @@
 import {describe, test, expect} from 'vitest';
-import {GeoJSONWrapper} from '../';
+import {GeoJSONWrapper} from '../index.ts';
 
 describe('geojsonwrapper', () => {
     test('linestring', () => {
