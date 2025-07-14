@@ -1,5 +1,5 @@
 {
-  "name": "vt-pbf",
+  "name": "@maplibre/vt-pbf",
   "version": "4.0.1",
   "description": "Serialize mapbox vector tiles to binary protobufs in javascript.",
   "main": "dist/index.es.js",
