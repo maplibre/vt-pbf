@@ -1,6 +1,6 @@
 {
   "name": "vt-pbf",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Serialize mapbox vector tiles to binary protobufs in javascript.",
   "main": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mapbox/vt-pbf.git"
+    "url": "git+https://github.com/maplibre/vt-pbf.git"
   },
   "dependencies": {
     "@mapbox/point-geometry": "^1.1.0",
