@@ -27,11 +27,6 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
-      - name: Bump version
-        run: |
-          npm version --commit-hooks false --git-tag-version false ${{ inputs.version }}
-          ./build/bump-version-changelog.js ${{ inputs.version }}
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
