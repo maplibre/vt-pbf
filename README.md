@@ -1,8 +1,14 @@
 [![MapLibre Logo](https://maplibre.org/img/maplibre-logo-big.svg)](https://maplibre.org/)
 
 # vt-pbf 
+[![NPM Version](https://img.shields.io/npm/v/@maplibre/vt-pbf.svg)](https://www.npmjs.com/package/@maplibre/vt-pbf)
 
 Serialize [Mapbox vector tiles](https://github.com/mapbox/vector-tile-spec) to binary protobufs in javascript.
+
+## Installation
+Using NPM: `npm install @maplibre/vt-pbf`
+
+Or `npm run build` and find build artifacts in `dist/`
 
 ## Usage
 
