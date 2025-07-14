@@ -28,7 +28,9 @@ const config: RollupOptions = {
             },
             sourceMap: true
         }),
-        typescript(),
+        typescript({
+            exclude: ['rollup.config.ts']
+        }),
         nodeResolve()
     ],
     external: [/node_modules/]
