@@ -19,6 +19,7 @@
     "type": "git",
     "url": "git+https://github.com/maplibre/vt-pbf.git"
   },
+  "type": "module",
   "dependencies": {
     "@mapbox/point-geometry": "^1.1.0",
     "@mapbox/vector-tile": "^2.0.4",
