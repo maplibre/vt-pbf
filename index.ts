@@ -5,7 +5,7 @@ import {type VectorTileLayer, type VectorTile, VectorTileFeature} from '@mapbox/
 
 interface Context {
     keys: string[];
-    values: string[];
+    values: (string | boolean | number)[];
     keycache: Record<string, number>;
     valuecache: Record<string, number>;
     feature?: VectorTileFeature;
@@ -112,7 +112,7 @@ function writeProperties(context: Context, pbf: Pbf) {
         const valueKey = typeof value + ':' + value;
         let valueIndex = context.valuecache[valueKey];
         if (typeof valueIndex === 'undefined') {
-            context.values.push(value as string);
+            context.values.push(value);
             valueIndex = context.values.length - 1;
             context.valuecache[valueKey] = valueIndex;
         }
