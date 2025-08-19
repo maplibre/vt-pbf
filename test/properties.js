@@ -34,7 +34,8 @@ describe('property encoding', function () {
           a: 'two',
           b: 2,
           c: { goodbye: 'planet' },
-          d: { hello: 'world' }
+          d: { hello: 'world' },
+          e: false
         },
         geometry: {
           type: 'Point',
@@ -52,11 +53,13 @@ describe('property encoding', function () {
 
     const first = layer.feature(0).properties
     const second = layer.feature(1).properties
-    expect(first.c).toEqual('{"hello":"world"}')
-    expect(first.d).toEqual('[1,2,3]')
-    expect(first.e).toEqual(undefined)
-    expect(second.c).toEqual('{"goodbye":"planet"}')
-    expect(second.d).toEqual('{"hello":"world"}')
+    expect(first.b).toStrictEqual(1)
+    expect(first.c).toStrictEqual('{"hello":"world"}')
+    expect(first.d).toStrictEqual('[1,2,3]')
+    expect(first.e).toStrictEqual(undefined)
+    expect(second.c).toStrictEqual('{"goodbye":"planet"}')
+    expect(second.d).toStrictEqual('{"hello":"world"}')
+    expect(second.e).toStrictEqual(false)
   })
 
   test('number encoding https://github.com/mapbox/vt-pbf/pull/11', function () {
@@ -121,7 +124,7 @@ test('id encoding', function () {
   const layer = vt.layers.geojsonLayer
   expect(layer.feature(0).id).toEqual(123)
   expect(layer.feature(1).id).toBeFalsy() // 'Non-integer values should not be saved'
-  expect(layer.feature(2).id).toBeFalsy()
+  expect(layer.feature(2).id).toBeUndefined()
 })
 
 test('accept geojson-vt options https://github.com/mapbox/vt-pbf/pull/21', function () {
