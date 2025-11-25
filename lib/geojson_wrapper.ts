@@ -1,13 +1,7 @@
 import Point from "@mapbox/point-geometry";
-import {
-    classifyRings,
-  VectorTileFeature,
-  VectorTileLayer,
-  type VectorTile,
-} from "@mapbox/vector-tile";
+import { classifyRings } from "@mapbox/vector-tile";
 import type { TileFeature, AnyProps } from "supercluster";
 import { type Feature as GeoJSONVTFeature, Geometry } from "geojson-vt";
-import Pbf from "pbf";
 import type { VectorTileFeatureLike, VectorTileLayerLike } from "../index";
 
 export type Feature = TileFeature<AnyProps, AnyProps> | GeoJSONVTFeature;
