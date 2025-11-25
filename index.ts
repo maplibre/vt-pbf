@@ -1,14 +1,36 @@
 import Pbf from 'pbf';
 import {type GeoJSONOptions, type Feature, GeoJSONWrapper} from './lib/geojson_wrapper';
 import geojsonvt from 'geojson-vt';
-import {type VectorTileLayer, type VectorTile, VectorTileFeature} from '@mapbox/vector-tile';
+import {type VectorTileLayer, type VectorTile} from '@mapbox/vector-tile';
+import type Point from '@mapbox/point-geometry';
 
 interface Context {
     keys: string[];
     values: (string | boolean | number)[];
     keycache: Record<string, number>;
     valuecache: Record<string, number>;
-    feature?: VectorTileFeature;
+    feature?: VectorTileFeatureLike;
+}
+
+export interface VectorTileFeatureLike {
+    type: 0 | 1 | 2 | 3;
+    properties: Record<string, number | string | boolean>;
+    id: number | undefined;
+    extent: number;
+    loadGeometry(): Point[][];
+    toGeoJSON(x: number, y: number, z: number): GeoJSON.Feature;
+}
+
+export interface VectorTileLayerLike {
+    version: number;
+    name: string;
+    extent: number;
+    length: number;
+    feature(i: number): VectorTileFeatureLike;
+}
+
+export interface VectorTileLike {
+    layers: Record<string, VectorTileLayerLike>;
 }
 
 /**
@@ -17,7 +39,7 @@ interface Context {
  * @param tile
  * @return uncompressed, pbf-serialized tile data
  */
-export function fromVectorTileJs(tile: VectorTile): Uint8Array {
+export function fromVectorTileJs(tile: VectorTileLike): Uint8Array {
     const out = new Pbf();
     writeTile(tile, out);
     return out.finish();
@@ -31,7 +53,7 @@ export function fromVectorTileJs(tile: VectorTile): Uint8Array {
  * @return uncompressed, pbf-serialized tile data
  */
 export function fromGeojsonVt(layers: geojsonvt.Tile[], options?: GeoJSONOptions): Uint8Array {
-    const l: Record<string, VectorTileLayer> = {};
+    const l: Record<string, VectorTileLayerLike> = {};
     // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const k in layers) {
         l[k] = new GeoJSONWrapper(layers[k].features, options);
@@ -42,13 +64,13 @@ export function fromGeojsonVt(layers: geojsonvt.Tile[], options?: GeoJSONOptions
     return fromVectorTileJs({ layers: l });
 }
 
-function writeTile(tile: VectorTile, pbf: Pbf) {
+function writeTile(tile: VectorTileLike, pbf: Pbf) {
     for (const key in tile.layers) {
         pbf.writeMessage(3, writeLayer, tile.layers[key]);
     }
 }
 
-function writeLayer(layer: VectorTileLayer, pbf: Pbf) {
+function writeLayer(layer: VectorTileLayerLike, pbf: Pbf) {
     pbf.writeVarintField(15, layer.version || 1);
     pbf.writeStringField(1, layer.name || '');
     pbf.writeVarintField(5, layer.extent || 4096);
@@ -128,7 +150,7 @@ function zigzag(num: number) {
     return (num << 1) ^ (num >> 31);
 }
 
-function writeGeometry(feature: VectorTileFeature, pbf: Pbf) {
+function writeGeometry(feature: VectorTileFeatureLike, pbf: Pbf) {
     const geometry = feature.loadGeometry();
     const type = feature.type;
     let x = 0;
