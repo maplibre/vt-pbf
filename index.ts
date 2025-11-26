@@ -1,7 +1,6 @@
 import Pbf from 'pbf';
 import {type GeoJSONOptions, type Feature, GeoJSONWrapper} from './lib/geojson_wrapper';
 import geojsonvt from 'geojson-vt';
-import {type VectorTileLayer, type VectorTile} from '@mapbox/vector-tile';
 import type Point from '@mapbox/point-geometry';
 
 interface Context {
