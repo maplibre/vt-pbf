@@ -18,7 +18,6 @@ export interface VectorTileFeatureLike {
     id: number | undefined;
     extent: number;
     loadGeometry(): Point[][];
-    toGeoJSON(x: number, y: number, z: number): GeoJSON.Feature;
 }
 
 export interface VectorTileLayerLike {
