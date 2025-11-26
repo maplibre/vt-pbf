@@ -1,7 +1,7 @@
 import Pbf from 'pbf';
-import {Feature, GEOJSON_TILE_LAYER_NAME, type GeoJSONOptions, GeoJSONWrapper} from "./lib/geojson_wrapper";
+import {type Feature, GEOJSON_TILE_LAYER_NAME, type GeoJSONOptions, GeoJSONWrapper} from "./lib/geojson_wrapper";
 import geojsonvt from 'geojson-vt';
-import {VectorTileFeatureLike, VectorTileLike, VectorTileLayerLike} from './lib/types';
+import type {VectorTileFeatureLike, VectorTileLike, VectorTileLayerLike} from './lib/types';
 
 interface Context {
     keys: string[];
@@ -179,9 +179,9 @@ function writeValue(value: string | boolean | number, pbf: Pbf) {
 export {
     GeoJSONWrapper,
     GeoJSONOptions,
-    type Feature,
+    Feature,
     GEOJSON_TILE_LAYER_NAME,
-    type VectorTileFeatureLike,
-    type VectorTileLike,
-    type VectorTileLayerLike,
+    VectorTileFeatureLike,
+    VectorTileLike,
+    VectorTileLayerLike,
 };
