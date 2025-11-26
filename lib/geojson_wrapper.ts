@@ -1,7 +1,13 @@
 import Point from '@mapbox/point-geometry';
 import type {TileFeature, AnyProps} from 'supercluster';
 import {type Feature as GeoJSONVTFeature, Geometry} from 'geojson-vt';
-import type {VectorTileFeatureLike, VectorTileLayerLike} from './types';
+import type {
+    VectorTileFeatureLike,
+    VectorTileLayerLike,
+    VectorTileLike,
+} from "./types";
+
+export { VectorTileFeatureLike, VectorTileLayerLike, VectorTileLike };
 
 export type Feature = TileFeature<AnyProps, AnyProps> | GeoJSONVTFeature;
 
@@ -53,6 +59,8 @@ class FeatureWrapper implements VectorTileFeatureLike {
     }
 }
 
+export const GEOJSON_TILE_LAYER_NAME = "_geojsonTileLayer";
+
 export class GeoJSONWrapper implements VectorTileLayerLike {
     layers: Record<string, VectorTileLayerLike>;
     features: Feature[];
@@ -62,8 +70,8 @@ export class GeoJSONWrapper implements VectorTileLayerLike {
     length: VectorTileLayerLike['length'];
 
     constructor(features: Feature[], options?: GeoJSONOptions) {
-        this.layers = {'_geojsonTileLayer': this};
-        this.name = '_geojsonTileLayer';
+        this.layers = { [GEOJSON_TILE_LAYER_NAME]: this };
+        this.name = GEOJSON_TILE_LAYER_NAME;
         this.version = options ? options.version : 1;
         this.extent = options ? options.extent : 4096;
         this.length = features.length;
