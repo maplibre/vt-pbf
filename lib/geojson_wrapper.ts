@@ -12,7 +12,6 @@ export interface GeoJSONOptions {
 
 class FeatureWrapper implements VectorTileFeatureLike {
     feature: Feature;
-
     type: VectorTileFeatureLike['type'];
     properties: VectorTileFeatureLike['properties'];
     id: VectorTileFeatureLike['id'];
