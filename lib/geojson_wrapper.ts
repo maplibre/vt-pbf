@@ -13,10 +13,10 @@ export interface GeoJSONOptions {
 class FeatureWrapper implements VectorTileFeatureLike {
     feature: Feature;
 
-    type: 0 | 1 | 2 | 3;
-    properties: Record<string, number | string | boolean>;
-    id: number | undefined;
-    extent: number;
+    type: VectorTileFeatureLike['type'];
+    properties: VectorTileFeatureLike['properties'];
+    id: VectorTileFeatureLike['id'];
+    extent: VectorTileFeatureLike['extent'];
 
     constructor(feature: Feature, extent: number) {
         this.feature = feature;
@@ -56,11 +56,11 @@ class FeatureWrapper implements VectorTileFeatureLike {
 
 export class GeoJSONWrapper implements VectorTileLayerLike {
     layers: Record<string, VectorTileLayerLike>;
-    name: string;
-    extent: number;
-    length: number;
-    version: number;
     features: Feature[];
+    version: VectorTileLayerLike['version'];
+    name: VectorTileLayerLike['name'];
+    extent: VectorTileLayerLike['extent'];
+    length: VectorTileLayerLike['length'];
 
     constructor(features: Feature[], options?: GeoJSONOptions) {
         this.layers = {'_geojsonTileLayer': this};
