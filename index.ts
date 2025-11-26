@@ -1,10 +1,5 @@
 import Pbf from 'pbf';
-import {
-    type GeoJSONOptions,
-    type Feature,
-    GeoJSONWrapper,
-    GEOJSON_TILE_LAYER_NAME,
-} from "./lib/geojson_wrapper";
+import {type GeoJSONOptions, GeoJSONWrapper} from "./lib/geojson_wrapper";
 import geojsonvt from 'geojson-vt';
 import {VectorTileFeatureLike, VectorTileLike, VectorTileLayerLike} from './lib/types';
 
@@ -184,8 +179,7 @@ function writeValue(value: string | boolean | number, pbf: Pbf) {
 export {
     GeoJSONWrapper,
     GeoJSONOptions,
-    Feature,
-    GEOJSON_TILE_LAYER_NAME,
+    FeatureGEOJSON_TILE_LAYER_NAME,
     type VectorTileFeatureLike,
     type VectorTileLike,
     type VectorTileLayerLike,
