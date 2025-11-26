@@ -15,6 +15,7 @@
     "files": [
         "index.ts",
         "lib/geojson_wrapper.ts",
-        "rollup.config.ts"
+        "rollup.config.ts",
+        "lib/types.ts"
     ]
 }

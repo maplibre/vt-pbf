@@ -1,7 +1,7 @@
 import Pbf from 'pbf';
 import {type GeoJSONOptions, type Feature, GeoJSONWrapper} from './lib/geojson_wrapper';
 import geojsonvt from 'geojson-vt';
-import type Point from '@mapbox/point-geometry';
+import {VectorTileFeatureLike, VectorTileLike, VectorTileLayerLike} from './lib/types';
 
 interface Context {
     keys: string[];
@@ -9,26 +9,6 @@ interface Context {
     keycache: Record<string, number>;
     valuecache: Record<string, number>;
     feature?: VectorTileFeatureLike;
-}
-
-export interface VectorTileFeatureLike {
-    type: 0 | 1 | 2 | 3;
-    properties: Record<string, number | string | boolean>;
-    id: number | undefined;
-    extent: number;
-    loadGeometry(): Point[][];
-}
-
-export interface VectorTileLayerLike {
-    version: number;
-    name: string;
-    extent: number;
-    length: number;
-    feature(i: number): VectorTileFeatureLike;
-}
-
-export interface VectorTileLike {
-    layers: Record<string, VectorTileLayerLike>;
 }
 
 /**
