@@ -1,8 +1,13 @@
 import Point from '@mapbox/point-geometry';
-import {VectorTileFeature, VectorTileLayer, type VectorTile} from '@mapbox/vector-tile';
 import type {TileFeature, AnyProps} from 'supercluster';
 import {type Feature as GeoJSONVTFeature, Geometry} from 'geojson-vt';
-import Pbf from 'pbf';
+import type {
+    VectorTileFeatureLike,
+    VectorTileLayerLike,
+    VectorTileLike,
+} from "./types";
+
+export { VectorTileFeatureLike, VectorTileLayerLike, VectorTileLike };
 
 export type Feature = TileFeature<AnyProps, AnyProps> | GeoJSONVTFeature;
 
@@ -11,14 +16,18 @@ export interface GeoJSONOptions {
     extent: number;
 }
 
-class FeatureWrapper extends VectorTileFeature {
+class FeatureWrapper implements VectorTileFeatureLike {
     feature: Feature;
+    type: VectorTileFeatureLike['type'];
+    properties: VectorTileFeatureLike['properties'];
+    id: VectorTileFeatureLike['id'];
+    extent: VectorTileFeatureLike['extent'];
 
     constructor(feature: Feature, extent: number) {
-        super(new Pbf(), 0, extent, [], []);
         this.feature = feature;
         this.type = feature.type;
         this.properties = feature.tags ? feature.tags : {};
+        this.extent = extent;
 
         // If the feature has a top-level `id` property, copy it over, but only
         // if it can be coerced to an integer, because this wrapper is used for
@@ -50,25 +59,26 @@ class FeatureWrapper extends VectorTileFeature {
     }
 }
 
-export class GeoJSONWrapper extends VectorTileLayer implements VectorTile {
-    layers: Record<string, VectorTileLayer>;
-    name: string;
-    extent: number;
-    length: number;
-    version: number;
+export const GEOJSON_TILE_LAYER_NAME = "_geojsonTileLayer";
+
+export class GeoJSONWrapper implements VectorTileLayerLike {
+    layers: Record<string, VectorTileLayerLike>;
     features: Feature[];
+    version: VectorTileLayerLike['version'];
+    name: VectorTileLayerLike['name'];
+    extent: VectorTileLayerLike['extent'];
+    length: VectorTileLayerLike['length'];
 
     constructor(features: Feature[], options?: GeoJSONOptions) {
-        super(new Pbf());
-        this.layers = {'_geojsonTileLayer': this};
-        this.name = '_geojsonTileLayer';
+        this.layers = { [GEOJSON_TILE_LAYER_NAME]: this };
+        this.name = GEOJSON_TILE_LAYER_NAME;
         this.version = options ? options.version : 1;
         this.extent = options ? options.extent : 4096;
         this.length = features.length;
         this.features = features;
     }
 
-    feature(i: number): VectorTileFeature {
+    feature(i: number): VectorTileFeatureLike {
         return new FeatureWrapper(this.features[i], this.extent);
     }
 }
