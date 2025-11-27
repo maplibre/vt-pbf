@@ -12,9 +12,5 @@
         "moduleResolution": "bundler",
         "declarationDir": "dist/"
     },
-    "files": [
-        "index.ts",
-        "lib/geojson_wrapper.ts",
-        "rollup.config.ts"
-    ]
+    "include": ["**/*.ts"]
 }

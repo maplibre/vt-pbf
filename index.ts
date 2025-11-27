@@ -1,14 +1,14 @@
 import Pbf from 'pbf';
-import {type GeoJSONOptions, type Feature, GeoJSONWrapper} from './lib/geojson_wrapper';
+import {type Feature, GEOJSON_TILE_LAYER_NAME, type GeoJSONOptions, GeoJSONWrapper} from "./lib/geojson_wrapper";
 import geojsonvt from 'geojson-vt';
-import {type VectorTileLayer, type VectorTile, VectorTileFeature} from '@mapbox/vector-tile';
+import type {VectorTileFeatureLike, VectorTileLike, VectorTileLayerLike} from './lib/types';
 
 interface Context {
     keys: string[];
     values: (string | boolean | number)[];
     keycache: Record<string, number>;
     valuecache: Record<string, number>;
-    feature?: VectorTileFeature;
+    feature?: VectorTileFeatureLike;
 }
 
 /**
@@ -17,7 +17,7 @@ interface Context {
  * @param tile
  * @return uncompressed, pbf-serialized tile data
  */
-export function fromVectorTileJs(tile: VectorTile): Uint8Array {
+export function fromVectorTileJs(tile: VectorTileLike): Uint8Array {
     const out = new Pbf();
     writeTile(tile, out);
     return out.finish();
@@ -31,7 +31,7 @@ export function fromVectorTileJs(tile: VectorTile): Uint8Array {
  * @return uncompressed, pbf-serialized tile data
  */
 export function fromGeojsonVt(layers: geojsonvt.Tile[], options?: GeoJSONOptions): Uint8Array {
-    const l: Record<string, VectorTileLayer> = {};
+    const l: Record<string, VectorTileLayerLike> = {};
     // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const k in layers) {
         l[k] = new GeoJSONWrapper(layers[k].features, options);
@@ -42,13 +42,13 @@ export function fromGeojsonVt(layers: geojsonvt.Tile[], options?: GeoJSONOptions
     return fromVectorTileJs({ layers: l });
 }
 
-function writeTile(tile: VectorTile, pbf: Pbf) {
+function writeTile(tile: VectorTileLike, pbf: Pbf) {
     for (const key in tile.layers) {
         pbf.writeMessage(3, writeLayer, tile.layers[key]);
     }
 }
 
-function writeLayer(layer: VectorTileLayer, pbf: Pbf) {
+function writeLayer(layer: VectorTileLayerLike, pbf: Pbf) {
     pbf.writeVarintField(15, layer.version || 1);
     pbf.writeStringField(1, layer.name || '');
     pbf.writeVarintField(5, layer.extent || 4096);
@@ -128,7 +128,7 @@ function zigzag(num: number) {
     return (num << 1) ^ (num >> 31);
 }
 
-function writeGeometry(feature: VectorTileFeature, pbf: Pbf) {
+function writeGeometry(feature: VectorTileFeatureLike, pbf: Pbf) {
     const geometry = feature.loadGeometry();
     const type = feature.type;
     let x = 0;
@@ -179,5 +179,9 @@ function writeValue(value: string | boolean | number, pbf: Pbf) {
 export {
     GeoJSONWrapper,
     GeoJSONOptions,
-    Feature
-}
+    Feature,
+    GEOJSON_TILE_LAYER_NAME,
+    VectorTileFeatureLike,
+    VectorTileLike,
+    VectorTileLayerLike,
+};
