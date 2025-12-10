@@ -97,7 +97,7 @@ function writeProperties(context: Context, pbf: Pbf) {
         let value = context.feature.properties[key];
 
         let keyIndex = context.keycache[key];
-        if (value === null) continue // don't encode null value properties
+        if (value == null) continue // don't encode null/undefined value properties
 
         if (typeof keyIndex === 'undefined') {
             context.keys.push(key);
