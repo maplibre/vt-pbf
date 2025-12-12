@@ -1,5 +1,9 @@
 name: Release
 
+permissions:
+  id-token: write  # Required for trusted publishing
+  contents: write
+
 on:
   push:
     branches: [main]
@@ -35,6 +39,10 @@ jobs:
     needs: release-check
     if: ${{ needs.release-check.outputs.publish == 'true' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     defaults:
       run:
         shell: bash
@@ -72,15 +80,11 @@ jobs:
         if: ${{ steps.prepare_release.outputs.release_type == 'regular' }}
         run: |
           npm publish --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_ORG_TOKEN }}
 
       - name: Publish NPM package (pre-release)
         if: ${{ steps.prepare_release.outputs.release_type == 'prerelease' }}
         run: |
           npm publish --access=public --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_ORG_TOKEN }}
 
       - name: Tag commit and push
         id: tag_version
@@ -93,6 +97,10 @@ jobs:
         run: |
           zip -r dist dist
 
+      - uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        with:
+          subject-path: dist.zip
+
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         env:
@@ -102,6 +110,7 @@ jobs:
           name: ${{ steps.tag_version.outputs.new_tag }}
           artifacts: "dist.zip"
           artifactContentType: "application/zip"
-          allowUpdates: true
+          allowUpdates: false
+          immutableCreate: true
           draft: false
           prerelease: ${{ steps.prepare_release.outputs.release_type == 'prerelease' }}

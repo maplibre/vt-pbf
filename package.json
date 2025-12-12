@@ -17,7 +17,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maplibre/vt-pbf.git"
+    "url": "https://github.com/maplibre/vt-pbf"
   },
   "type": "module",
   "dependencies": {
