@@ -11,7 +11,8 @@
     "lint": "eslint index.ts lib/*.ts",
     "test-unit": "vitest run --config vitest.config.unit.ts",
     "test-unit-ci": "vitest run --config vitest.config.unit.ts --coverage",
-    "build": "rollup --config rollup.config.ts --configPlugin typescript && tsc"
+    "build": "rollup --config rollup.config.ts --configPlugin typescript && tsc",
+    "docs": "typedoc --entryPoints index.ts --out docs/API"
   },
   "author": "Anand Thakker <vestibule@anandthakker.net> (http://anandthakker.net/)",
   "license": "MIT",
@@ -27,7 +28,8 @@
     "@types/supercluster": "^7.1.3",
     "geojson-vt": "^4.0.2",
     "pbf": "^4.0.1",
-    "supercluster": "^8.0.1"
+    "supercluster": "^8.0.1",
+    "typedoc": "^0.28.15"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
