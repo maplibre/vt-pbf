@@ -1,8 +1,9 @@
-name: Release
+name: Publish to NPM
 
 permissions:
   id-token: write  # Required for trusted publishing
   contents: write
+  attestations: write
 
 on:
   push:
@@ -10,107 +11,5 @@ on:
   workflow_dispatch:
 
 jobs:
-  release-check:
-    name: Check if version changed
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: main
-
-      - name: Use Node.js from nvmrc
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-
-      - name: Check if version has been updated
-        id: check
-        uses: EndBug/version-check@v2
-          
-    outputs:
-      publish: ${{ steps.check.outputs.changed }}
-
   release:
-    name: Release
-    needs: release-check
-    if: ${{ needs.release-check.outputs.publish == 'true' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-      attestations: write
-    defaults:
-      run:
-        shell: bash
-    steps:
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: main
-
-      - name: Use Node.js from nvmrc
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Get version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@v1.3.1
-
-      - name: Install
-        run: npm ci
-
-      - name: Prepare release
-        id: prepare_release
-        run: |
-          RELEASE_TYPE=$(node -e "console.log(require('semver').prerelease('${{ steps.package-version.outputs.current-version }}') ? 'prerelease' : 'regular')")
-          echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
-
-      - name: Build
-        run: |
-          npm run build
-
-      - name: Publish NPM package (regular)
-        if: ${{ steps.prepare_release.outputs.release_type == 'regular' }}
-        run: |
-          npm publish --access=public
-
-      - name: Publish NPM package (pre-release)
-        if: ${{ steps.prepare_release.outputs.release_type == 'prerelease' }}
-        run: |
-          npm publish --access=public --tag next
-
-      - name: Tag commit and push
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          custom_tag: ${{ steps.package-version.outputs.current-version }}
-
-      - name: Create Archive
-        run: |
-          zip -r dist dist
-
-      - uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
-        with:
-          subject-path: dist.zip
-
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag: ${{ steps.tag_version.outputs.new_tag }}
-          name: ${{ steps.tag_version.outputs.new_tag }}
-          artifacts: "dist.zip"
-          artifactContentType: "application/zip"
-          allowUpdates: false
-          immutableCreate: true
-          draft: false
-          prerelease: ${{ steps.prepare_release.outputs.release_type == 'prerelease' }}
+    uses: maplibre/reusable-workflows/.github/workflows/npm-publish.yml@main

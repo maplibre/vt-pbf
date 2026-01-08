@@ -11,7 +11,8 @@
     "lint": "eslint index.ts lib/*.ts",
     "test-unit": "vitest run --config vitest.config.unit.ts",
     "test-unit-ci": "vitest run --config vitest.config.unit.ts --coverage",
-    "build": "rollup --config rollup.config.ts --configPlugin typescript && tsc"
+    "build": "rollup --config rollup.config.ts --configPlugin typescript && tsc",
+    "docs": "typedoc --entryPoints index.ts --out docs/API"
   },
   "author": "Anand Thakker <vestibule@anandthakker.net> (http://anandthakker.net/)",
   "license": "MIT",
@@ -52,6 +53,7 @@
     "rollup": "^4.44.1",
     "standard": "^17.1.2",
     "tslib": "^2.8.1",
+    "typedoc": "^0.28.15",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite-tsconfig-paths": "^5.1.4",
