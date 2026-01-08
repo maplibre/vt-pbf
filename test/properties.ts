@@ -1,19 +1,20 @@
-import geojsonvt from 'geojson-vt'
-import Pbf from 'pbf'
-import { test, describe, expect } from 'vitest'
-import { VectorTile } from '@mapbox/vector-tile'
-import GeoJsonEquality from 'geojson-equality'
-import fs from 'fs'
-import path from 'path'
-import { fromGeojsonVt } from '../index.ts'
+import geojsonvt from 'geojson-vt';
+import Pbf from 'pbf';
+import {test, describe, expect } from 'vitest';
+import {VectorTile} from '@mapbox/vector-tile';
+import GeoJsonEquality from 'geojson-equality';
+import fs from 'fs';
+import path from 'path';
+import {fromGeojsonVt} from '../index';
+import {Feature, FeatureCollection} from 'geojson';
 
-const eq = new GeoJsonEquality({ precision: 1 })
+const eq = new GeoJsonEquality({ precision: 1 });
 
-describe('property encoding', function () {
-  test('property encoding: JSON.stringify non-primitive values', function () {
+describe('property encoding', () => {
+  test('property encoding: JSON.stringify non-primitive values', () => {
     // Includes two properties with a common non-primitive value for
     // https://github.com/mapbox/vt-pbf/issues/9
-    const orig = {
+    const orig: geojsonvt.Data = {
       type: 'FeatureCollection',
       features: [{
         type: 'Feature',
@@ -42,28 +43,33 @@ describe('property encoding', function () {
           coordinates: [0, 0]
         }
       }]
+    };
+
+    const tileindex = geojsonvt(orig, {});
+    const tile = tileindex.getTile(1, 0, 0);
+    expect(tile).toBeTruthy();
+    if (!tile) {
+      return;
     }
+    
+    const buff = fromGeojsonVt({ geojsonLayer: tile });
 
-    const tileindex = geojsonvt(orig)
-    const tile = tileindex.getTile(1, 0, 0)
-    const buff = fromGeojsonVt({ geojsonLayer: tile })
+    const vt = new VectorTile(new Pbf(buff));
+    const layer = vt.layers.geojsonLayer;
 
-    const vt = new VectorTile(new Pbf(buff))
-    const layer = vt.layers.geojsonLayer
+    const first = layer.feature(0).properties;
+    const second = layer.feature(1).properties;
+    expect(first.b).toStrictEqual(1);
+    expect(first.c).toStrictEqual('{"hello":"world"}');
+    expect(first.d).toStrictEqual('[1,2,3]');
+    expect(first.e).toStrictEqual(undefined);
+    expect(second.c).toStrictEqual('{"goodbye":"planet"}');
+    expect(second.d).toStrictEqual('{"hello":"world"}');
+    expect(second.e).toStrictEqual(false);
+  });
 
-    const first = layer.feature(0).properties
-    const second = layer.feature(1).properties
-    expect(first.b).toStrictEqual(1)
-    expect(first.c).toStrictEqual('{"hello":"world"}')
-    expect(first.d).toStrictEqual('[1,2,3]')
-    expect(first.e).toStrictEqual(undefined)
-    expect(second.c).toStrictEqual('{"goodbye":"planet"}')
-    expect(second.d).toStrictEqual('{"hello":"world"}')
-    expect(second.e).toStrictEqual(false)
-  })
-
-  test('number encoding https://github.com/mapbox/vt-pbf/pull/11', function () {
-    const orig = {
+  test('number encoding https://github.com/mapbox/vt-pbf/pull/11', () => {
+    const orig: geojsonvt.Data = {
       type: 'Feature',
       properties: {
         large_integer: 39953616224,
@@ -73,22 +79,27 @@ describe('property encoding', function () {
         type: 'Point',
         coordinates: [0, 0]
       }
+    };
+
+    const tileindex = geojsonvt(orig, {});
+    const tile = tileindex.getTile(1, 0, 0);
+    expect(tile).toBeTruthy();
+    if (!tile) {
+      return;
     }
 
-    const tileindex = geojsonvt(orig)
-    const tile = tileindex.getTile(1, 0, 0)
-    const buff = fromGeojsonVt({ geojsonLayer: tile })
-    const vt = new VectorTile(new Pbf(buff))
-    const layer = vt.layers.geojsonLayer
+    const buff = fromGeojsonVt({ geojsonLayer: tile });
+    const vt = new VectorTile(new Pbf(buff));
+    const layer = vt.layers.geojsonLayer;
 
-    const properties = layer.feature(0).properties
-    expect(properties.large_integer).toEqual(39953616224)
-    expect(properties.non_integer).toEqual(331.75415)
-  })
-})
+    const properties = layer.feature(0).properties;
+    expect(properties.large_integer).toEqual(39953616224);
+    expect(properties.non_integer).toEqual(331.75415);
+  });
+});
 
-test('id encoding', function () {
-  const orig = {
+test('id encoding', () => {
+  const orig: geojsonvt.Data = {
     type: 'FeatureCollection',
     features: [{
       type: 'Feature',
@@ -115,40 +126,55 @@ test('id encoding', function () {
         coordinates: [0, 0]
       }
     }]
+  };
+
+  const tileindex = geojsonvt(orig, {});
+  const tile = tileindex.getTile(1, 0, 0);
+  expect(tile).toBeTruthy();
+  if (!tile) {
+    return;
   }
 
-  const tileindex = geojsonvt(orig)
-  const tile = tileindex.getTile(1, 0, 0)
-  const buff = fromGeojsonVt({ geojsonLayer: tile })
-  const vt = new VectorTile(new Pbf(buff))
-  const layer = vt.layers.geojsonLayer
-  expect(layer.feature(0).id).toEqual(123)
-  expect(layer.feature(1).id).toBeFalsy() // 'Non-integer values should not be saved'
-  expect(layer.feature(2).id).toBeUndefined()
-})
+  const buff = fromGeojsonVt({ geojsonLayer: tile });
+  const vt = new VectorTile(new Pbf(buff));
+  const layer = vt.layers.geojsonLayer;
 
-test('accept geojson-vt options https://github.com/mapbox/vt-pbf/pull/21', function () {
+  expect(layer.feature(0).id).toEqual(123);
+  expect(layer.feature(1).id).toBeFalsy(); // 'Non-integer values should not be saved'
+  expect(layer.feature(2).id).toBeUndefined();
+});
+
+test('accept geojson-vt options https://github.com/mapbox/vt-pbf/pull/21', () => {
   const version = 2
   const extent = 8192
-  const orig = JSON.parse(fs.readFileSync(path.join(__dirname, '/fixtures/rectangle.geojson')))
-  const tileindex = geojsonvt(orig, { extent: extent })
-  const tile = tileindex.getTile(1, 0, 0)
-  const options = { version: version, extent: extent }
-  const buff = fromGeojsonVt({ geojsonLayer: tile }, options)
-
-  const vt = new VectorTile(new Pbf(buff))
-  const layer = vt.layers.geojsonLayer
-  const features = []
-  for (let i = 0; i < layer.length; i++) {
-    const feat = layer.feature(i).toGeoJSON(0, 0, 1)
-    features.push(feat)
+  const orig = JSON.parse(fs.readFileSync(path.join(__dirname, '/fixtures/rectangle.geojson'), 'utf-8')) as FeatureCollection;
+  const tileindex = geojsonvt(orig, {extent: extent});
+  const tile = tileindex.getTile(1, 0, 0);
+  expect(tile).toBeTruthy();
+  if (!tile) {
+    return;
   }
 
-  expect(layer.version).toEqual(options.version, 'version should be equal')
-  expect(layer.extent).toEqual(options.extent, 'extent should be equal')
+  const options = {version: version, extent: extent};
+  const buff = fromGeojsonVt({ geojsonLayer: tile }, options);
 
-  orig.features.forEach(function (expected) {
-    const actual = features.shift()
-    expect(eq.compare(actual, expected)).toBeTruthy()
-  })
-})
+  const vt = new VectorTile(new Pbf(buff));
+  const layer = vt.layers.geojsonLayer;
+  const features: Feature[] = [];
+  for (let i = 0; i < layer.length; i++) {
+    const feat = layer.feature(i).toGeoJSON(0, 0, 1);
+    features.push(feat);
+  }
+
+  expect(layer.version).toEqual(options.version);
+  expect(layer.extent).toEqual(options.extent);
+
+  orig.features.forEach((expected: Feature) => {
+    const actual = features.shift();
+    expect(actual).toBeTruthy();
+    if (!actual) {
+      return;
+    }
+    expect(eq.compare(actual, expected)).toBeTruthy();
+  });
+});

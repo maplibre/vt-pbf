@@ -1,5 +1,6 @@
 import {describe, test, expect} from 'vitest';
 import {GeoJSONWrapper} from '../index';
+import {Feature} from 'geojson-vt';
 
 describe('geojsonwrapper', () => {
     test('linestring', () => {
@@ -9,7 +10,8 @@ describe('geojsonwrapper', () => {
             tags: {hello: 'world'}
         }];
 
-        const wrap = new GeoJSONWrapper(features as any);
+        // Note: @types/geojson-vt doesn't look right here
+        const wrap = new GeoJSONWrapper(features as unknown as Feature[]);
         const feature = wrap.feature(0);
 
         expect(feature).toBeTruthy();
@@ -26,7 +28,7 @@ describe('geojsonwrapper', () => {
             tags: {}
         }];
 
-        const wrap = new GeoJSONWrapper(features as any);
+        const wrap = new GeoJSONWrapper(features as unknown as Feature[]);
         const feature = wrap.feature(0);
         expect(feature.loadGeometry()).toEqual([[{x: 0, y: 1}]]);
     });
