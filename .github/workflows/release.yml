@@ -13,5 +13,3 @@ on:
 jobs:
   release:
     uses: maplibre/reusable-workflows/.github/workflows/npm-publish.yml@main
-    with:
-      build-command: npm ci && npm run build
