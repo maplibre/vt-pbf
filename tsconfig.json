@@ -10,7 +10,10 @@
         "target": "es2020",
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "declarationDir": "dist/"
+        "declarationDir": "dist/",
+        "typeRoots": [
+            "types/**/*.d.ts"
+        ]
     },
     "include": ["**/*.ts"]
 }
