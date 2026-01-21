@@ -9,9 +9,21 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      release_type:
+        type: choice
+        description: 'Type of version bump'
+        options:
+          - major
+          - minor
+          - patch
+          - premajor
+          - preminor
+          - prepatch
+          - prerelease
 
 jobs:
-  release:
-    uses: maplibre/reusable-workflows/.github/workflows/npm-publish.yml@main
+  bump-version-pr:
+    uses: maplibre/reusable-workflows/.github/workflows/create-bump-version-pr.yml@main
     with:
-      build-command: npm ci
+      version: ${{ github.event.inputs.release_type }}
