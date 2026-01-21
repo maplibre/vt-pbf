@@ -1,13 +1,6 @@
-name: Publish to NPM
-
-permissions:
-  id-token: write  # Required for trusted publishing
-  contents: write
-  attestations: write
+name: Create bump version PR
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       release_type:
