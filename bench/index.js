@@ -1,6 +1,6 @@
 var fs = require('fs')
 var path = require('path')
-var geojsonVt = require('geojson-vt')
+var geojsonVt = require('@maplibre/geojson-vt')
 var Pbf = require('pbf')
 var VectorTile = require('@mapbox/vector-tile').VectorTile
 var Benchmark = require('benchmark')

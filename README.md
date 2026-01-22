@@ -37,7 +37,7 @@ fs.writeFileSync('my-tile.pbf', buff)
 
 ```javascript
 import {fromGeojsonVt} from 'vt-pbf'
-import geojsonVt from 'geojson-vt'
+import geojsonVt from '@maplibre/geojson-vt'
 
 var orig = JSON.parse(fs.readFileSync(__dirname + '/fixtures/rectangle.geojson'))
 var tileindex = geojsonVt(orig)

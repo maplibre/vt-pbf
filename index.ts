@@ -1,6 +1,6 @@
 import Pbf from 'pbf';
 import {type Feature, GEOJSON_TILE_LAYER_NAME, type GeoJSONOptions, GeoJSONWrapper} from "./lib/geojson_wrapper";
-import geojsonvt from 'geojson-vt';
+import type {GeoJSONVTTile} from '@maplibre/geojson-vt';
 import type {VectorTileFeatureLike, VectorTileLike, VectorTileLayerLike} from './lib/types';
 
 interface Context {
@@ -30,7 +30,7 @@ export function fromVectorTileJs(tile: VectorTileLike): Uint8Array {
  * @param options - An object specifying the vector-tile specification version and extent that were used to create `layers`.
  * @return uncompressed, pbf-serialized tile data
  */
-export function fromGeojsonVt(layers: Record<string, geojsonvt.Tile>, options?: GeoJSONOptions): Uint8Array {
+export function fromGeojsonVt(layers: Record<string, GeoJSONVTTile>, options?: GeoJSONOptions): Uint8Array {
     const l: Record<string, VectorTileLayerLike> = {};
     // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const k in layers) {

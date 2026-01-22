@@ -1,6 +1,5 @@
 declare module '@mapbox/geojson-fixtures' {
-  import GeoJSON from 'geojson';
-  import geojsonvt from "geojson-vt";
+  import geojsonvt from "@maplibre/geojson-vt";
 
   export type Geometries = 'geometrycollection' | 'polygon' | 'point' |
     'multipoint' | 'multipolygon' | 'multilinestring';
@@ -9,14 +8,14 @@ declare module '@mapbox/geojson-fixtures' {
     geometry: Record<Geometries, GeoJSON.Geometry>;
 
     featurecollection: {
-      'one': geojsonvt.Data;
+      'one': GeoJSON.GeoJSON;
     };
 
     feature: {
-      'one': geojsonvt.Data;
+      'one': GeoJSON.GeoJSON;
     };
 
-    all: Record<string, geojsonvt.Data | GeoJSON.Geometry>;
+    all: Record<string, GeoJSON.GeoJSON>;
   };
 
   export default geojsonFixtures;

@@ -1,17 +1,17 @@
 import {describe, test, expect} from 'vitest';
 import {GeoJSONWrapper} from '../index';
-import {Feature} from 'geojson-vt';
+import {GeoJSONVTFeature} from '@maplibre/geojson-vt';
 
 describe('geojsonwrapper', () => {
     test('linestring', () => {
-        const features = [{
+        const features: GeoJSONVTFeature[] = [{
             type: 2,
             geometry: [[[0, 0], [10, 10]]],
             tags: {hello: 'world'}
         }];
 
         // Note: @types/geojson-vt doesn't look right here
-        const wrap = new GeoJSONWrapper(features as unknown as Feature[]);
+        const wrap = new GeoJSONWrapper(features);
         const feature = wrap.feature(0);
 
         expect(feature).toBeTruthy();
@@ -22,13 +22,13 @@ describe('geojsonwrapper', () => {
     });
 
     test('point', () => {
-        const features = [{
+        const features: GeoJSONVTFeature[] = [{
             type: 1,
             geometry: [[0, 1]],
             tags: {}
         }];
 
-        const wrap = new GeoJSONWrapper(features as unknown as Feature[]);
+        const wrap = new GeoJSONWrapper(features);
         const feature = wrap.feature(0);
         expect(feature.loadGeometry()).toEqual([[{x: 0, y: 1}]]);
     });
