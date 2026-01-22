@@ -1,6 +1,6 @@
 import Point from '@mapbox/point-geometry';
 import type {TileFeature, AnyProps} from 'supercluster';
-import {type Feature as GeoJSONVTFeature, Geometry} from 'geojson-vt';
+import type {GeoJSONVTFeature} from '@maplibre/geojson-vt';
 import type {
     VectorTileFeatureLike,
     VectorTileLayerLike,
@@ -46,8 +46,7 @@ class FeatureWrapper implements VectorTileFeatureLike {
 
     loadGeometry() {
         const geometry = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const rawGeo = this.feature.type === 1 ? [this.feature.geometry] : this.feature.geometry as any as Geometry[][];
+        const rawGeo = this.feature.type === 1 ? [this.feature.geometry] : this.feature.geometry;
         for (const ring of rawGeo) {
             const newRing = [];
             for (const point of ring) {

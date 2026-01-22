@@ -1,5 +1,5 @@
 import {test, expect, describe} from 'vitest';
-import geojsonvt from 'geojson-vt';
+import geojsonvt from '@maplibre/geojson-vt';
 import {VectorTile} from '@mapbox/vector-tile';
 import Pbf from 'pbf';
 import {isValid} from '@maplibre/vtvalidate';
@@ -11,7 +11,7 @@ import {fromVectorTileJs, fromGeojsonVt} from '../index';
 
 interface FixtureEntry {
   name: string,
-  data: geojsonvt.Data;
+  data: GeoJSON.GeoJSON;
 };
 
 const eq = new GeoJsonEquality({ precision: 1 });
@@ -41,7 +41,7 @@ describe('geojson-vt', function () {
     name: 'collection',
     data: JSON.parse(
       readFileSync(__dirname + '/fixtures/featurecollection.geojson').toString()
-    ) as geojsonvt.Data
+    ) as GeoJSON.GeoJSON
    }
   ].forEach((fixture: FixtureEntry) => {
     test(fixture.name, () => {

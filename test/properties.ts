@@ -1,4 +1,4 @@
-import geojsonvt from 'geojson-vt';
+import geojsonvt from '@maplibre/geojson-vt';
 import Pbf from 'pbf';
 import {test, describe, expect } from 'vitest';
 import {VectorTile} from '@mapbox/vector-tile';
@@ -14,7 +14,7 @@ describe('property encoding', () => {
   test('property encoding: JSON.stringify non-primitive values', () => {
     // Includes two properties with a common non-primitive value for
     // https://github.com/mapbox/vt-pbf/issues/9
-    const orig: geojsonvt.Data = {
+    const orig: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
       features: [{
         type: 'Feature',
@@ -69,7 +69,7 @@ describe('property encoding', () => {
   });
 
   test('number encoding https://github.com/mapbox/vt-pbf/pull/11', () => {
-    const orig: geojsonvt.Data = {
+    const orig: GeoJSON.Feature = {
       type: 'Feature',
       properties: {
         large_integer: 39953616224,
@@ -99,7 +99,7 @@ describe('property encoding', () => {
 });
 
 test('id encoding', () => {
-  const orig: geojsonvt.Data = {
+  const orig: GeoJSON.FeatureCollection = {
     type: 'FeatureCollection',
     features: [{
       type: 'Feature',
