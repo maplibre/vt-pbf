@@ -38,7 +38,7 @@ class FeatureWrapper implements VectorTileFeatureLike {
         if ('id' in feature) {
             if (typeof feature.id === 'string') {
                 this.id = parseInt(feature.id, 10);
-            } else if (typeof feature.id === 'number' && !isNaN(feature.id as number)) {
+            } else if (typeof feature.id === 'number' && !isNaN(feature.id)) {
                 this.id = feature.id;
             }
         }
