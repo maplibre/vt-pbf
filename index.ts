@@ -15,7 +15,8 @@ interface Context {
 /**
  * Serialize a vector-tile-js-created tile to pbf
  *
- * @param tile
+ * @param tile - the tile to serialize
+ * @param jsonPrefix - a string prefix to prepend to JSON-stringified non-primitive property values, used to distinguish them from regular string values when parsing the tile later. Default is "".
  * @return uncompressed, pbf-serialized tile data
  */
 export function fromVectorTileJs(tile: VectorTileLike, jsonPrefix = ""): Uint8Array {
