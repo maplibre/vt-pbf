@@ -4,6 +4,7 @@ import type {GeoJSONVTTile} from '@maplibre/geojson-vt';
 import type {VectorTileFeatureLike, VectorTileLike, VectorTileLayerLike} from './lib/types';
 
 interface Context {
+    jsonPrefix: string;
     keys: string[];
     values: (string | boolean | number)[];
     keycache: Record<string, number>;
@@ -14,12 +15,13 @@ interface Context {
 /**
  * Serialize a vector-tile-js-created tile to pbf
  *
- * @param tile
+ * @param tile - the tile to serialize
+ * @param jsonPrefix - a string prefix to prepend to JSON-stringified non-primitive property values, used to distinguish them from regular string values when parsing the tile later. Default is "".
  * @return uncompressed, pbf-serialized tile data
  */
-export function fromVectorTileJs(tile: VectorTileLike): Uint8Array {
+export function fromVectorTileJs(tile: VectorTileLike, jsonPrefix = ""): Uint8Array {
     const out = new Pbf();
-    writeTile(tile, out);
+    writeTile(tile, out, jsonPrefix);
     return out.finish();
 }
 
@@ -42,18 +44,19 @@ export function fromGeojsonVt(layers: Record<string, GeoJSONVTTile>, options?: G
     return fromVectorTileJs({ layers: l });
 }
 
-function writeTile(tile: VectorTileLike, pbf: Pbf) {
+function writeTile(tile: VectorTileLike, pbf: Pbf, jsonPrefix = "") {
     for (const key in tile.layers) {
-        pbf.writeMessage(3, writeLayer, tile.layers[key]);
+        pbf.writeMessage(3, (layer, pbf) => writeLayer(layer, pbf, jsonPrefix), tile.layers[key]);
     }
 }
 
-function writeLayer(layer: VectorTileLayerLike, pbf: Pbf) {
+function writeLayer(layer: VectorTileLayerLike, pbf: Pbf, jsonPrefix = "") {
     pbf.writeVarintField(15, layer.version || 1);
     pbf.writeStringField(1, layer.name || '');
     pbf.writeVarintField(5, layer.extent || 4096);
 
     const context: Context = {
+        jsonPrefix,
         keys: [],
         values: [],
         keycache: {},
@@ -107,7 +110,7 @@ function writeProperties(context: Context, pbf: Pbf) {
         pbf.writeVarint(keyIndex);
 
         if (typeof value !== 'string' && typeof value !== 'boolean' && typeof value !== 'number') {
-            value = JSON.stringify(value);
+            value = context.jsonPrefix + JSON.stringify(value);
         }
         const valueKey = typeof value + ':' + value;
         let valueIndex = context.valuecache[valueKey];

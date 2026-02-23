@@ -1,5 +1,7 @@
 ## main
 ### ✨ Features and improvements
+- Add ability to add a json prefix to json stringify results of nested objects in the mvt for later parsing ([#28](https://github.com/maplibre/vt-pbf/pull/28)) (by [HarelM](https://github.com/HarelM))
+
 - _...Add new stuff here..._
 
 ### 🐞 Bug fixes

@@ -5,12 +5,39 @@ import {VectorTile} from '@mapbox/vector-tile';
 import GeoJsonEquality from 'geojson-equality';
 import fs from 'fs';
 import path from 'path';
-import {fromGeojsonVt} from '../index';
+import {fromGeojsonVt, fromVectorTileJs, GEOJSON_TILE_LAYER_NAME, GeoJSONWrapper} from '../index';
 import {Feature, FeatureCollection} from 'geojson';
 
 const eq = new GeoJsonEquality({ precision: 1 });
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 describe('property encoding', () => {
+  test('property encoding: JSON.stringify non-primitive values with prefix', () => {
+    const orig: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: {
+          obj: { hello: 'world' },
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [0, 0]
+        }
+      }]
+    };
+    const tileindex = geojsonvt(orig, {});
+    const tile = tileindex.getTile(1, 0, 0)!;
+    const buff = fromVectorTileJs(new GeoJSONWrapper(tile.features), '__json__:');
+    const vt = new VectorTile(new Pbf(buff));
+    const layer = vt.layers[GEOJSON_TILE_LAYER_NAME];
+    const properties = layer.feature(0).properties;
+    expect(properties.obj).toStrictEqual('__json__:{"hello":"world"}');
+    expect(JSON.parse(properties.obj.toString().replace('__json__:', ''))).toStrictEqual({hello: 'world'});
+  });
+
+
   test('property encoding: JSON.stringify non-primitive values', () => {
     // Includes two properties with a common non-primitive value for
     // https://github.com/mapbox/vt-pbf/issues/9
@@ -46,11 +73,8 @@ describe('property encoding', () => {
     };
 
     const tileindex = geojsonvt(orig, {});
-    const tile = tileindex.getTile(1, 0, 0);
+    const tile = tileindex.getTile(1, 0, 0)!;
     expect(tile).toBeTruthy();
-    if (!tile) {
-      return;
-    }
     
     const buff = fromGeojsonVt({ geojsonLayer: tile });
 
