@@ -10,6 +10,8 @@ import {Feature, FeatureCollection} from 'geojson';
 
 const eq = new GeoJsonEquality({ precision: 1 });
 
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 describe('property encoding', () => {
   test('property encoding: JSON.stringify non-primitive values with prefix', () => {
     const orig: GeoJSON.FeatureCollection = {
@@ -26,12 +28,12 @@ describe('property encoding', () => {
       }]
     };
     const tileindex = geojsonvt(orig, {});
-    const tile = tileindex.getTile(1, 0, 0);
-    const buff = fromVectorTileJs(new GeoJSONWrapper(tile?.features!), '__json__:');
+    const tile = tileindex.getTile(1, 0, 0)!;
+    const buff = fromVectorTileJs(new GeoJSONWrapper(tile.features), '__json__:');
     const vt = new VectorTile(new Pbf(buff));
     const layer = vt.layers[GEOJSON_TILE_LAYER_NAME];
     const properties = layer.feature(0).properties;
-    expect(properties.obj).toStrictEqual('__json__:{\"hello\":\"world\"}');
+    expect(properties.obj).toStrictEqual('__json__:{"hello":"world"}');
     expect(JSON.parse(properties.obj.toString().replace('__json__:', ''))).toStrictEqual({hello: 'world'});
   });
 
@@ -71,9 +73,10 @@ describe('property encoding', () => {
     };
 
     const tileindex = geojsonvt(orig, {});
-    const tile = tileindex.getTile(1, 0, 0);
+    const tile = tileindex.getTile(1, 0, 0)!;
+    expect(tile).toBeTruthy();
     
-    const buff = fromGeojsonVt({ geojsonLayer: tile! });
+    const buff = fromGeojsonVt({ geojsonLayer: tile });
 
     const vt = new VectorTile(new Pbf(buff));
     const layer = vt.layers.geojsonLayer;
