@@ -5,11 +5,17 @@
 ### 🐞 Bug fixes
 - _...Add new stuff here..._
 
+## 4.3.2
+
+### 🐞 Bug fixes
+
+- Fix package external dependencies references due to Rolldown migration ([#47](https://github.com/maplibre/vt-pbf/pull/47)) (by [@HarelM](https://github.com/HarelM))
+
 ## 4.3.1
 
 ### ✨ Features and improvements
 
-- Update dependencies to latest, mainly pbf to version 5.x. Moved non-runtime dependencies to devDependecies ([#45](https://github.com/maplibre/vt-pbf/pull/45)) (by [@HarelM](https://github.com/HarelM))
+- Update dependencies to latest, mainly pbf to version 5.x. Moved non-runtime dependencies to devDependecies, migrate to Rolldown ([#45](https://github.com/maplibre/vt-pbf/pull/45)) (by [@HarelM](https://github.com/HarelM))
 
 ## 4.3.0
 
