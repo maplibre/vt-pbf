@@ -11,5 +11,5 @@ export default defineConfig({
         console.error(message);
         throw message;
     },
-    external: [/node_modules/]
+    external: ['pbf', '@mapbox/point-geometry']
 });
