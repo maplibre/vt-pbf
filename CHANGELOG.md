@@ -5,6 +5,12 @@
 ### 🐞 Bug fixes
 - _...Add new stuff here..._
 
+- Update dependencies to latest ([#45](https://github.com/maplibre/vt-pbf/pull/45)) (by [@HarelM](https://github.com/HarelM))
+## 4.3.1
+### ✨ Features and improvements
+
+### 🐞 Bug fixes
+
 ## 4.3.0
 
 ### ✨ Features and improvements
