@@ -5,6 +5,12 @@
 ### 🐞 Bug fixes
 - _...Add new stuff here..._
 
+- Fix package ([#47](https://github.com/maplibre/vt-pbf/pull/47)) (by [@HarelM](https://github.com/HarelM))
+## 4.3.2
+### ✨ Features and improvements
+
+### 🐞 Bug fixes
+
 ## 4.3.1
 
 ### ✨ Features and improvements
