@@ -1,6 +1,4 @@
 declare module '@mapbox/geojson-fixtures' {
-  import geojsonvt from "@maplibre/geojson-vt";
-
   export type Geometries = 'geometrycollection' | 'polygon' | 'point' |
     'multipoint' | 'multipolygon' | 'multilinestring';
 

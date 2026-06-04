@@ -1,5 +1,5 @@
 import {test, expect, describe} from 'vitest';
-import geojsonvt from '@maplibre/geojson-vt';
+import {GeoJSONVT} from '@maplibre/geojson-vt';
 import {VectorTile} from '@mapbox/vector-tile';
 import Pbf from 'pbf';
 import {isValid} from '@maplibre/vtvalidate';
@@ -45,7 +45,7 @@ describe('geojson-vt', function () {
    }
   ].forEach((fixture: FixtureEntry) => {
     test(fixture.name, () => {
-      const tile = geojsonvt(fixture.data, {}).getTile(0, 0, 0);
+      const tile = new GeoJSONVT(fixture.data, {}).getTile(0, 0, 0);
       expect(tile).toBeTruthy();
       if (!tile) {
         return;

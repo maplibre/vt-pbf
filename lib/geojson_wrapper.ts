@@ -1,5 +1,4 @@
 import Point from '@mapbox/point-geometry';
-import type {TileFeature, AnyProps} from 'supercluster';
 import type {GeoJSONVTFeature} from '@maplibre/geojson-vt';
 import type {
     VectorTileFeatureLike,
@@ -9,7 +8,7 @@ import type {
 
 export { VectorTileFeatureLike, VectorTileLayerLike, VectorTileLike };
 
-export type Feature = TileFeature<AnyProps, AnyProps> | GeoJSONVTFeature;
+export type Feature = GeoJSONVTFeature;
 
 export interface GeoJSONOptions {
     version: number;
