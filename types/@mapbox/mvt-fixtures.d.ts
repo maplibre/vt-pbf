@@ -10,7 +10,8 @@ declare module '@mapbox/mvt-fixtures' {
   }
 
   export interface CreateOptions {
-    syntax: string;
+    proto?: string;
+    syntax?: string;
   }
 
   export interface CreateResult {
@@ -18,16 +19,8 @@ declare module '@mapbox/mvt-fixtures' {
   }
 
   export function get(id: string | number): Fixture;
-  
+
   export function each(fn: (fixture: Fixture) => void): void;
-  
-  export function create(json: string, proto: string, options?: CreateOptions): CreateResult;
 
-  const mvtf: {
-    get: (id: string | number) => Fixture;
-    each: (fn: (fixture: Fixture) => void) => void;
-    create: (json: string, proto: string, options?: CreateOptions) => CreateResult;
-  };
-
-  export default mvtf;
+  export function create(definition: object, options?: CreateOptions): CreateResult;
 }

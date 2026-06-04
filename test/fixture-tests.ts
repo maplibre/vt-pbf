@@ -3,8 +3,8 @@ import {GeoJSONVT} from '@maplibre/geojson-vt';
 import {VectorTile} from '@mapbox/vector-tile';
 import {PbfReader} from 'pbf';
 import {isValid} from '@maplibre/vtvalidate';
-import geojsonFixtures, {Geometries} from '@mapbox/geojson-fixtures';
-import mvtf, {Fixture} from '@mapbox/mvt-fixtures';
+import {geometry as geometryFixtures, Geometries} from '@mapbox/geojson-fixtures';
+import {each as mvtEach, Fixture} from '@mapbox/mvt-fixtures';
 import GeoJsonEquality from 'geojson-equality';
 import {readFileSync} from 'fs';
 import {fromVectorTileJs, fromGeojsonVt} from '../index';
@@ -32,7 +32,7 @@ describe('geojson-vt', function () {
         data: {
           type: 'Feature',
           properties: {},
-          geometry: geojsonFixtures.geometry[type as Geometries]
+          geometry: geometryFixtures[type as Geometries]
         }
       };
     }),
@@ -52,7 +52,7 @@ describe('geojson-vt', function () {
       }
 
       const buff = fromGeojsonVt({ geojsonLayer: tile });
-      isValid(buff, (error: Error, result: string) => {
+      isValid(buff as unknown as ArrayBufferLike, (error: Error, result: string) => {
         expect(error).toBeFalsy();
         expect(result).toEqual('');
 
@@ -60,10 +60,13 @@ describe('geojson-vt', function () {
         const expected = fixture.data.type === 'FeatureCollection' ? fixture.data.features : [fixture.data];
         const layer = new VectorTile(new PbfReader(buff)).layers.geojsonLayer;
         expect(layer.length).toEqual(expected.length);
-        
+
         for (let i = 0; i < layer.length; i++) {
           const actual = layer.feature(i).toGeoJSON(0, 0, 0);
-          expect(eq.compare(actual, expected[i])).toBeTruthy();
+          // @mapbox/vector-tile v3 returns null-prototype properties; normalize
+          // so geojson-equality's strict deep-equal matches the originals.
+          const normalized = {...actual, properties: {...actual.properties}};
+          expect(eq.compare(normalized, expected[i])).toBeTruthy();
         }
       });
     });
@@ -73,7 +76,7 @@ describe('geojson-vt', function () {
 describe('vector-tile-js', () => {
   // See https://github.com/mapbox/mvt-fixtures/blob/master/FIXTURES.md for
   // fixture descriptions
-  mvtf.each((fixture: Fixture) => {
+  mvtEach((fixture: Fixture) => {
     // skip invalid tiles
     if (!fixture.validity.v2) return;
 
@@ -93,7 +96,7 @@ describe('vector-tile-js', () => {
       const buff = fromVectorTileJs(original);
       const roundtripped = new VectorTile(new PbfReader(buff));
 
-      isValid(buff, (error: Error, message: string) => {
+      isValid(buff as unknown as ArrayBufferLike, (error: Error, message: string) => {
         if (error) {
           throw error;
         }

@@ -187,7 +187,7 @@ test('accept geojson-vt options https://github.com/mapbox/vt-pbf/pull/21', () =>
   const features: Feature[] = [];
   for (let i = 0; i < layer.length; i++) {
     const feat = layer.feature(i).toGeoJSON(0, 0, 1);
-    features.push(feat);
+    features.push({...feat, properties: {...feat.properties}});
   }
 
   expect(layer.version).toEqual(options.version);

@@ -2,19 +2,16 @@ declare module '@mapbox/geojson-fixtures' {
   export type Geometries = 'geometrycollection' | 'polygon' | 'point' |
     'multipoint' | 'multipolygon' | 'multilinestring';
 
-  const geojsonFixtures: {
-    geometry: Record<Geometries, GeoJSON.Geometry>;
+  // Keyed by geometry type as well as `${type}-xyz` variants, so allow any string.
+  export const geometry: Record<string, GeoJSON.Geometry>;
 
-    featurecollection: {
-      'one': GeoJSON.GeoJSON;
-    };
-
-    feature: {
-      'one': GeoJSON.GeoJSON;
-    };
-
-    all: Record<string, GeoJSON.GeoJSON>;
+  export const featurecollection: {
+    'one': GeoJSON.GeoJSON;
   };
 
-  export default geojsonFixtures;
+  export const feature: {
+    'one': GeoJSON.GeoJSON;
+  };
+
+  export const all: Record<string, GeoJSON.GeoJSON>;
 }
