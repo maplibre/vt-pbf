@@ -5,7 +5,7 @@
         "checkJs": true,
         "strict": true,
         "declaration": true,
-        "noEmit": true,
+        "emitDeclarationOnly": true,
         "isolatedModules": true,
         "target": "es2020",
         "module": "ESNext",
