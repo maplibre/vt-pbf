@@ -1,5 +1,4 @@
 import {defineConfig} from 'rolldown';
-import typescript from '@rollup/plugin-typescript';
 
 export default defineConfig({
     input: ['index.ts'],
@@ -12,10 +11,5 @@ export default defineConfig({
         console.error(message);
         throw message;
     },
-    plugins: [
-        typescript({
-            exclude: ['rolldown.config.ts']
-        })
-    ],
     external: [/node_modules/]
 });

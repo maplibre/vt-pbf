@@ -11,7 +11,6 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['json', 'html'],
             exclude: ['node_modules/', 'bench/', 'dist/', 'test/'],
-            all: true,
             include: ['index.ts', 'lib/**/*.ts'],
             reportsDirectory: './coverage/vitest/unit',
         }
