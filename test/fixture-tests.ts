@@ -63,8 +63,6 @@ describe('geojson-vt', function () {
 
         for (let i = 0; i < layer.length; i++) {
           const actual = layer.feature(i).toGeoJSON(0, 0, 0);
-          // @mapbox/vector-tile v3 returns null-prototype properties; normalize
-          // so geojson-equality's strict deep-equal matches the originals.
           const normalized = {...actual, properties: {...actual.properties}};
           expect(eq.compare(normalized, expected[i])).toBeTruthy();
         }
