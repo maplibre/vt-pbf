@@ -34,7 +34,6 @@ export function fromVectorTileJs(tile: VectorTileLike, jsonPrefix = ""): Uint8Ar
  */
 export function fromGeojsonVt(layers: Record<string, GeoJSONVTTile>, options?: GeoJSONOptions): Uint8Array {
     const l: Record<string, VectorTileLayerLike> = {};
-    // eslint-disable-next-line @typescript-eslint/no-for-in-array
     for (const k in layers) {
         l[k] = new GeoJSONWrapper(layers[k].features, options);
         l[k].name = k;
