@@ -1,5 +1,5 @@
 import {GeoJSONVT} from '@maplibre/geojson-vt';
-import Pbf from 'pbf';
+import {PbfReader} from 'pbf';
 import {test, describe, expect } from 'vitest';
 import {VectorTile} from '@mapbox/vector-tile';
 import GeoJsonEquality from 'geojson-equality';
@@ -30,7 +30,7 @@ describe('property encoding', () => {
     const tileindex = new GeoJSONVT(orig, {});
     const tile = tileindex.getTile(1, 0, 0)!;
     const buff = fromVectorTileJs(new GeoJSONWrapper(tile.features), '__json__:');
-    const vt = new VectorTile(new Pbf(buff));
+    const vt = new VectorTile(new PbfReader(buff));
     const layer = vt.layers[GEOJSON_TILE_LAYER_NAME];
     const properties = layer.feature(0).properties;
     expect(properties.obj).toStrictEqual('__json__:{"hello":"world"}');
@@ -78,7 +78,7 @@ describe('property encoding', () => {
     
     const buff = fromGeojsonVt({ geojsonLayer: tile });
 
-    const vt = new VectorTile(new Pbf(buff));
+    const vt = new VectorTile(new PbfReader(buff));
     const layer = vt.layers.geojsonLayer;
 
     const first = layer.feature(0).properties;
@@ -113,7 +113,7 @@ describe('property encoding', () => {
     }
 
     const buff = fromGeojsonVt({ geojsonLayer: tile });
-    const vt = new VectorTile(new Pbf(buff));
+    const vt = new VectorTile(new PbfReader(buff));
     const layer = vt.layers.geojsonLayer;
 
     const properties = layer.feature(0).properties;
@@ -160,7 +160,7 @@ test('id encoding', () => {
   }
 
   const buff = fromGeojsonVt({ geojsonLayer: tile });
-  const vt = new VectorTile(new Pbf(buff));
+  const vt = new VectorTile(new PbfReader(buff));
   const layer = vt.layers.geojsonLayer;
 
   expect(layer.feature(0).id).toEqual(123);
@@ -182,7 +182,7 @@ test('accept geojson-vt options https://github.com/mapbox/vt-pbf/pull/21', () =>
   const options = {version: version, extent: extent};
   const buff = fromGeojsonVt({ geojsonLayer: tile }, options);
 
-  const vt = new VectorTile(new Pbf(buff));
+  const vt = new VectorTile(new PbfReader(buff));
   const layer = vt.layers.geojsonLayer;
   const features: Feature[] = [];
   for (let i = 0; i < layer.length; i++) {

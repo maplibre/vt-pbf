@@ -1,7 +1,7 @@
 import {test, expect, describe} from 'vitest';
 import {GeoJSONVT} from '@maplibre/geojson-vt';
 import {VectorTile} from '@mapbox/vector-tile';
-import Pbf from 'pbf';
+import {PbfReader} from 'pbf';
 import {isValid} from '@maplibre/vtvalidate';
 import geojsonFixtures, {Geometries} from '@mapbox/geojson-fixtures';
 import mvtf, {Fixture} from '@mapbox/mvt-fixtures';
@@ -58,7 +58,7 @@ describe('geojson-vt', function () {
 
         // Compare roundtripped features with originals
         const expected = fixture.data.type === 'FeatureCollection' ? fixture.data.features : [fixture.data];
-        const layer = new VectorTile(new Pbf(buff)).layers.geojsonLayer;
+        const layer = new VectorTile(new PbfReader(buff)).layers.geojsonLayer;
         expect(layer.length).toEqual(expected.length);
         
         for (let i = 0; i < layer.length; i++) {
@@ -78,7 +78,7 @@ describe('vector-tile-js', () => {
     if (!fixture.validity.v2) return;
 
     test('mvt-fixtures: ' + fixture.id + ' ' + fixture.description, () => {
-      const original = new VectorTile(new Pbf(new Uint8Array(fixture.buffer)));
+      const original = new VectorTile(new PbfReader(new Uint8Array(fixture.buffer)));
 
       if (fixture.id === '020') {
         console.log('Skipping test due to https://github.com/mapbox/vt-pbf/issues/30');
@@ -91,7 +91,7 @@ describe('vector-tile-js', () => {
       }
 
       const buff = fromVectorTileJs(original);
-      const roundtripped = new VectorTile(new Pbf(buff));
+      const roundtripped = new VectorTile(new PbfReader(buff));
 
       isValid(buff, (error: Error, message: string) => {
         if (error) {
