@@ -69,6 +69,18 @@ describe('geojson-vt', function () {
       });
     });
   });
+
+  test('polygon ring without its closing point keeps all its corners', () => {
+    const tile = new GeoJSONVT({type: 'Polygon', coordinates: [[[-30, 30], [30, 30], [30, -30], [-30, -30]]]}, {}).getTile(0, 0, 0);
+    expect(tile).toBeTruthy();
+    if (!tile) {
+      return;
+    }
+
+    const buff = fromGeojsonVt({geojsonLayer: tile});
+    const ring = new VectorTile(new PbfReader(buff)).layers.geojsonLayer.feature(0).loadGeometry()[0];
+    expect(ring.map(p => [p.x, p.y])).toEqual([[1707, 1690], [2389, 1690], [2389, 2406], [1707, 2406], [1707, 1690]]);
+  });
 });
 
 describe('vector-tile-js', () => {
