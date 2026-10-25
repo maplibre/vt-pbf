@@ -3,8 +3,15 @@
 - _...Add new stuff here..._
 
 ### 🐞 Bug fixes
-- Fix a polygon ring that does not repeat its first point losing its last corner when encoded ([#8874](https://github.com/maplibre/maplibre-gl-js/issues/8874)) (by [@johncarmack1984](https://github.com/johncarmack1984))
 - _...Add new stuff here..._
+
+- Update packages ([#63](https://github.com/maplibre/vt-pbf/pull/63)) (by [@HarelM](https://github.com/HarelM))
+- fix: keep the last point of a polygon ring that does not repeat its first point ([#62](https://github.com/maplibre/vt-pbf/pull/62)) (by [@johncarmack1984](https://github.com/johncarmack1984))
+## 4.3.3
+### ✨ Features and improvements
+
+### 🐞 Bug fixes
+- Fix a polygon ring that does not repeat its first point losing its last corner when encoded ([#8874](https://github.com/maplibre/maplibre-gl-js/issues/8874)) (by [@johncarmack1984](https://github.com/johncarmack1984))
 
 ## 4.3.2
 
