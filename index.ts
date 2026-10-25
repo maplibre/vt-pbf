@@ -142,8 +142,10 @@ function writeGeometry(feature: VectorTileFeatureLike, pbf: PbfWriter) {
             count = ring.length;
         }
         pbf.writeVarint(command(1, count)); // moveto
-        // do not write polygon closing path as lineto
-        const lineCount = type === 3 ? ring.length - 1 : ring.length;
+        // do not write the polygon closing point, a repeat of the first point, as lineto
+        const last = ring[ring.length - 1];
+        const closed = type === 3 && ring.length > 1 && last.x === ring[0].x && last.y === ring[0].y;
+        const lineCount = closed ? ring.length - 1 : ring.length;
         for (let i = 0; i < lineCount; i++) {
             if (i === 1 && type !== 1) {
                 pbf.writeVarint(command(2, lineCount - 1)); // lineto
